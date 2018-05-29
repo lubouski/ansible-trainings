@@ -29,6 +29,7 @@
       password: '{{ user_password }}'
       ssh_key_file: '{{ user_authorized_key }}'
       home: '{{ user_home_dir }}'
+    changed_when: no
 
   - name: Disable tty
     become: yes
