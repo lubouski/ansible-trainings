@@ -26,7 +26,6 @@
       comment: John Doe
       uid: '{{ user_id }}'
       group: "{{ user_primary_group }}"
-      groups: wheel
       password: '{{ user_password }}'
       ssh_key_file: '{{ user_authorized_key }}'
       home: '{{ user_home_dir }}'
@@ -34,9 +33,14 @@
   - name: Disable tty
     become: yes
     template:
-      src: sudoers.j2
-      dest: /etc/sudoers
+      src: disable-tty.j2
+      dest: /etc/sudoers.d/disable-tty
       validate: '/usr/sbin/visudo -cf %s'
 
-    
+  - name: Add "{{ user_name }}" privileges
+    become: yes
+    template:
+      src: privileges.j2
+      dest: /etc/sudoers.d/privileges
+      
  
