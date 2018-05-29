@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  connection: local
+  
+  vars: 
+    user_name: johnd
+    user_id: 1040
+    user_primary_group: developers
+    user_primaru_group_id: 1040
+    user_password: qwerty
+    user_authorized_key: '.ssh/id_rsa'
+    user_home_dir: '/home/{{ user_name }}'
+
+  tasks:
+  - name: Ensure group "{{ user_primary_group }}" exists with GID = "{{ user_primaru_group_id }}"
+    become: yes
+    group:
+      name: '{{ user_primary_group }}'
+      state: present
+      gid: '{{ user_primaru_group_id }}'
+    
+  - name: Add the user "{{ user_name }}" with a specific uid and a primary group of "{{ user_primary_group }}"
+    become: yes
+    user:
+      name: '{{ user_name }}'
+      comment: John Doe
+      uid: '{{ user_id }}'
+      group: "{{ user_primary_group }}"
+      groups: wheel
+      password: '{{ user_password }}'
+      ssh_key_file: '{{ user_authorized_key }}'
+      home: '{{ user_home_dir }}'
+
+  - name: Disable tty
+    become: yes
+    template:
+      src: sudoers.j2
+      dest: /etc/sudoers
+      validate: '/usr/sbin/visudo -cf %s'
+
+    
+ 
