@@ -7,7 +7,7 @@
     user_id: 1040
     user_primary_group: developers
     user_primaru_group_id: 1040
-    user_password: qwerty
+    user_password: "{{ 'qwerty'|password_hash('sha512') }}"
     user_authorized_key: '.ssh/id_rsa'
     user_home_dir: '/home/{{ user_name }}'
 
