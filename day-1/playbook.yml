@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   
   vars: 
     user_name: johnd
@@ -30,7 +30,7 @@
     become: yes
     template:
       src: user-add.j2
-      dest: /etc/sudoers.d/'{{ user_name }}'
+      dest: /etc/sudoers.d/{{ user_name }}
       validate: '/usr/sbin/visudo -cf %s'
 
   - name: Test on if user in group root
