@@ -1,6 +1,5 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: all
   
   vars: 
     user_name: johnd
@@ -8,8 +7,6 @@
     user_primary_group: developers
     user_primaru_group_id: 1040
     user_password: "{{ 'qwerty'|password_hash('sha512') }}"
-    user_authorized_key: '.ssh/id_rsa'
-    user_home_dir: '/home/{{ user_name }}'
 
   tasks:
   - name: Ensure group "{{ user_primary_group }}" exists with GID = "{{ user_primaru_group_id }}"
@@ -19,7 +16,7 @@
       state: present
       gid: '{{ user_primaru_group_id }}'
     
-  - name: Add the user "{{ user_name }}" with a specific uid and a primary group of "{{ user_primary_group }}"
+  - name: Adding user to the system 
     become: yes
     user:
       name: '{{ user_name }}'
@@ -27,21 +24,30 @@
       uid: '{{ user_id }}'
       group: "{{ user_primary_group }}"
       password: '{{ user_password }}'
-      ssh_key_file: '{{ user_authorized_key }}'
-      home: '{{ user_home_dir }}'
     changed_when: no
 
-  - name: Disable tty
+  - name: Granting sudoers privileges and disable tty
     become: yes
     template:
-      src: disable-tty.j2
-      dest: /etc/sudoers.d/disable-tty
+      src: user-add.j2
+      dest: /etc/sudoers.d/'{{ user_name }}'
       validate: '/usr/sbin/visudo -cf %s'
 
-  - name: Add "{{ user_name }}" privileges
+  - name: Test on if user in group root
+    shell: |
+        time 5; sudo id
+    become_user: '{{ user_name }}'
     become: yes
-    template:
-      src: privileges.j2
-      dest: /etc/sudoers.d/privileges
-      
- 
+    register: user_data
+    failed_when: user_data.stdout.split(" ")[0] != "uid=0(root)" 
+    changed_when: no 
+    
+  - name: Set authorized key took from file
+    become: yes
+    authorized_key:
+      user: '{{ user_name }}'
+      state: present
+      key: "{{ lookup('file', item) }}"
+    with_fileglob:
+      - "{{ lookup('env', 'HOME') + '/.ssh/*.pub' }}"
+     
