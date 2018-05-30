@@ -1,0 +1,9 @@
+---
+# defaults file for user
+
+user_name: johnd
+user_id: 1040
+user_primary_group: developers
+user_primaru_group_id: 1040
+user_password: "{{ 'qwerty'|password_hash('sha512') }}"
+

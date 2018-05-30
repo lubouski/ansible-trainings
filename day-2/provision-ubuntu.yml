@@ -1,0 +1,14 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks: 
+  - name: Provision Ubuntu
+    block:
+      - raw: apt -y update && apt install -y python-minimal
+        args:
+          creates: /usr/bin/python
+      - apt:
+          name: sudo
+          state: latest
+          install_recommends: no

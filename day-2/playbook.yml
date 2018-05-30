@@ -1,0 +1,6 @@
+---
+- name: Add User and adding new authorized keys to a user 
+  hosts: all
+
+  roles: 
+  - user
