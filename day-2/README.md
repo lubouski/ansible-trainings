@@ -14,8 +14,8 @@ This is refactored ansible project for user creation on ubuntu or centos
 $ docker run -d centos sleep infinity
 $ docker run -d ubuntu sleep infinity
 $ docker ps
-$ ansible-playbook provision-ubuntu.yml -i 'ubuntu-container-name,' -c docker
-$ ansible-playbook provision.yml -i 'centos-container-name,' -c docker
+$ ansible-playbook flat-provision.yml -i 'ubuntu-container-name,' -c docker
+$ ansible-playbook flat-provision.yml -i 'centos-container-name,' -c docker
 $ ansible-playbook playbook.yml -i 'ubuntu-container-name,' -c docker
 $ ansible-playbook playbook.yml -i 'centos-container-name,' -c docker 
 ```

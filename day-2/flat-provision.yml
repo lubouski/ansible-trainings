@@ -1,0 +1,33 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+  - name: Check on what instance type 
+    raw: cat /etc/*-release | grep 'ID=ubuntu\|ID="centos"' | tr -d '\n'
+    register: release
+
+  - name: Provision Ubuntu
+    block:
+      - raw: apt -y update && apt install -y python-minimal
+        args:
+          creates: /usr/bin/python
+      - apt:
+          name: sudo
+          state: latest
+          install_recommends: no
+    when: release.stdout == 'ID=ubuntu'
+
+  - name: Provision Centos
+    block:
+      - setup: 
+      - yum:
+          name: "{{ item }}"
+          state: installed
+        with_items:
+          - epel-release 
+          - sudo 
+    when: release.stdout == 'ID="centos"'
+
+
+      
